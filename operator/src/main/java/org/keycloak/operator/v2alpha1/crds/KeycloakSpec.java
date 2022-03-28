@@ -23,13 +23,12 @@ import org.keycloak.operator.v2alpha1.crds.keycloakspec.Unsupported;
 
 import javax.validation.constraints.NotNull;
 import java.util.List;
-import java.util.Map;
 
 public class KeycloakSpec {
 
     private int instances = 1;
     private String image;
-    private Map<String, String> serverConfiguration;
+    private List<ValueOrSecret> serverConfiguration; // can't use Set due to a bug in Sundrio
 
     @NotNull
     @JsonPropertyDescription("Hostname for the Keycloak server.\n" +
@@ -39,9 +38,8 @@ public class KeycloakSpec {
     @JsonPropertyDescription("A secret containing the TLS configuration for HTTPS. Reference: https://kubernetes.io/docs/concepts/configuration/secret/#tls-secrets.\n" +
             "The special value `" + Constants.INSECURE_DISABLE + "` disables https.")
     private String tlsSecret;
-
-    @JsonPropertyDescription("List of URLs to download Keycloak extensions.")
-    private List<String> extensions;
+    @JsonPropertyDescription("Disable the default ingress.")
+    private boolean disableDefaultIngress;
     @JsonPropertyDescription(
         "In this section you can configure podTemplate advanced features, not production-ready, and not supported settings.\n" +
         "Use at your own risk and open an issue with your use-case if you don't find an alternative way.")
@@ -59,6 +57,14 @@ public class KeycloakSpec {
         return this.hostname.equals(Constants.INSECURE_DISABLE);
     }
 
+    public void setDefaultIngressDisabled(boolean value) {
+        this.disableDefaultIngress = value;
+    }
+
+    public boolean isDefaultIngressDisabled() {
+        return this.disableDefaultIngress;
+    }
+
     public String getTlsSecret() {
         return tlsSecret;
     }
@@ -69,14 +75,6 @@ public class KeycloakSpec {
 
     public boolean isHttp() {
         return this.tlsSecret.equals(Constants.INSECURE_DISABLE);
-    }
-
-    public List<String> getExtensions() {
-        return extensions;
-    }
-
-    public void setExtensions(List<String> extensions) {
-        this.extensions = extensions;
     }
 
     public Unsupported getUnsupported() {
@@ -103,11 +101,11 @@ public class KeycloakSpec {
         this.image = image;
     }
 
-    public Map<String, String> getServerConfiguration() {
+    public List<ValueOrSecret> getServerConfiguration() {
         return serverConfiguration;
     }
 
-    public void setServerConfiguration(Map<String, String> serverConfiguration) {
+    public void setServerConfiguration(List<ValueOrSecret> serverConfiguration) {
         this.serverConfiguration = serverConfiguration;
     }
 }
