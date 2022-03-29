@@ -1,7 +1,7 @@
 FROM registry.access.redhat.com/ubi8-minimal AS build-env
 
 ENV KEYCLOAK_VERSION 17.0.1-INACTA
-ARG KEYCLOAK_DIST=https://artifactory.inacta.ch/artifactory/repo/org/keycloak/keycloak-quarkus-dist/$KEYCLOAK_VERSION/keycloak-quarkus-dist-$KEYCLOAK_VERSION.tar.gz
+ARG KEYCLOAK_DIST=./quarkus/dist/target/keycloak-$KEYCLOAK_VERSION.tar.gz
 
 RUN microdnf install -y tar gzip
 
